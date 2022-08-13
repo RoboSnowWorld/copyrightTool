@@ -38,21 +38,18 @@ def middle(base_image_size, watermark_size):
 
 
 def paste(base_image, watermark, position, fully=False):
-    if base_image.mode == 'RGBA':
-        pass
-    else:
+    if base_image.mode != 'RGBA':
         base_image = base_image.convert('RGBA')
 
-    if watermark.mode == 'RGBA':
-        pass
-    else:
+    if watermark.mode != 'RGBA':
         watermark = watermark.convert('RGBA')
 
     watermark_width = base_image.width // 10
     watermark_height = base_image.height // 10
     watermark = watermark.resize(size=(watermark_width, watermark_height))
 
-    position = positions[position](base_image.size, watermark.size)
+    if type(position) is not tuple:
+        position = positions[position](base_image.size, watermark.size)
 
     watermark = watermark.copy()
     base_image = base_image.copy()
@@ -96,7 +93,10 @@ time.sleep(2)
 while True:
     try:
         position = input("\x1b[1mEnter position for watermark \n"
-                         "1 - left top/2 - right top/3 - left bottom/ 4 - right bottom/5 - in the middle]\n")
+                         "1 - left top/2 - right top/3 - left bottom/ 4 - right bottom/5 - in the middle/you can enter coordinates in format x y]\n")
+        position = (int(position.split(' ')[0]),int(position.split(' ')[1]))
+        break
+    except IndexError:
         position = int(position)
         if position in range(0, 6): break
     except ValueError:
